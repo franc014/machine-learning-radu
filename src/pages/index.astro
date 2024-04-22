@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Sketchpad">
+	<main>
+		<h1>Data Creator</h1>
+		<div id="sketchPadContainer">
+
+		</div>
+	</main>
+</Layout>
+
+<style>
+	main {
+		
+		display: grid;
+		place-items: center;
+	}
+	
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+		color: white;
+	}
+
+	#sketchPadContainer {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		align-items: center;
+	}
+
+</style>
+
+<script>
+	import { Sketchpad } from '../js/sketchPad.js';
+
+	const container = document.querySelector('#sketchPadContainer');
+
+	const sketchpad = new Sketchpad(container);
+</script>
