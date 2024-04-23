@@ -5,6 +5,7 @@ export class Sketchpad {
     this.undoBtn = document.createElement("button");
     this.undoBtn.textContent = "Clear";
     this.undoBtn.classList.add("clear-button");
+    this.undoBtn.classList.add("btn");
 
     this.canvas.width = size;
     this.canvas.height = size;
@@ -22,8 +23,7 @@ export class Sketchpad {
     this.ctx.lineJoin = "round";
     this.#addEventListeners();
 
-    this.paths = [];
-    this.isDrawing = false;
+    this.reset();
   }
 
   #addEventListeners() {
@@ -85,6 +85,12 @@ export class Sketchpad {
 
   #undo() {
     this.paths.pop();
+    this.#redraw();
+  }
+
+  reset() {
+    this.paths = [];
+    this.isDrawing = false;
     this.#redraw();
   }
 }

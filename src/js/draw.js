@@ -1,7 +1,6 @@
 export const draw = {};
 
 draw.path = (ctx, path, color = "black") => {
-  console.log(path);
   ctx.strokeStyle = color;
   ctx.lineWidth = 5;
   ctx.beginPath();
