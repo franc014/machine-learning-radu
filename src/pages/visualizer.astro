@@ -3,7 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import samples from '../common/js_objects/samples.js';
 import utils from '../common/utils.js';
 
-const data = utils.groupBy('student_name',samples);
+const data = utils.groupBy('student_id',samples);
+const students = utils.byStudent(data);
 
 ---
 
@@ -11,7 +12,33 @@ const data = utils.groupBy('student_name',samples);
   <main>
     <h1>Visualizer</h1>
     <section>
+
       {
+        students.map((student) => {
+          return (
+            <section>
+              <h2>{student.student}</h2> 
+              <div class="visualizer">
+              {
+                student.drawings.map((drawing) => {
+                  return (
+                    <div class="drawing">
+                      <h3>{drawing.drawing}</h3>
+                      <img src={`/data/img/${drawing.img}`} decoding="async"
+      loading="lazy" alt={drawing.drawing} />
+                    </div>
+                  )
+                })
+              }
+
+              </div>
+            </section>
+          )
+        })
+      }
+
+
+     <!--  {
         Object.keys(data).map((key) => {
           return (
             <div >
@@ -36,7 +63,7 @@ const data = utils.groupBy('student_name',samples);
             </div>
           )
         })
-      }
+      } -->
     </section>
   </main>
 </Layout>

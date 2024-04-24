@@ -10,14 +10,17 @@ utils.printProgress = (count, max) => {
 utils.groupBy = (key, samples) => {
   function groupByReducer(acc, curr, i) {
     if (!acc[curr[key]]) {
-      acc[curr[key]] = [
-        {
-          drawing: curr.label,
-          img: `${i + 1}.png`,
-        },
-      ];
+      acc[curr[key]] = {
+        student: curr.student_name,
+        drawings: [
+          {
+            drawing: curr.label,
+            img: `${i + 1}.png`,
+          },
+        ],
+      };
     } else {
-      acc[curr[key]].push({
+      acc[curr[key]].drawings.push({
         drawing: curr.label,
         img: `${i + 1}.png`,
       });
@@ -27,6 +30,16 @@ utils.groupBy = (key, samples) => {
   }
 
   return samples.reduce(groupByReducer, {});
+};
+
+utils.byStudent = (studentsData) => {
+  let byStudent = [];
+
+  Object.values(studentsData).forEach((student) => {
+    byStudent.push(student);
+  });
+
+  return byStudent;
 };
 
 export default utils;
