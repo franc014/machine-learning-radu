@@ -1,4 +1,4 @@
-import { draw } from "../js/draw.js";
+import { draw } from "../common/draw.js";
 export class Sketchpad {
   constructor(container, size = 400) {
     this.canvas = document.createElement("canvas");
