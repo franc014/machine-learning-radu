@@ -41,7 +41,9 @@ export class Sketchpad {
       }
     };
 
-    this.canvas.onmouseup = () => {
+    //event on document, so at the borders of the canvas, it stops drawing
+    // the same for ontouchend for mobile
+    document.onmouseup = () => {
       this.isDrawing = false;
     };
 
@@ -53,8 +55,8 @@ export class Sketchpad {
       const loc = event.touches[0];
       this.canvas.onmousemove(loc);
     };
-    this.canvas.ontouchend = () => {
-      this.canvas.onmouseup(loc);
+    document.ontouchend = () => {
+      document.onmouseup(loc);
     };
 
     this.undoBtn.onclick = () => {
