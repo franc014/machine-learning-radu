@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import samples from '../common/js_objects/samples.js';
+import utils from '../common/utils.js';
+
+const data = utils.groupBy('student_name',samples);
+
+---
+
+<Layout title="Visualizer">
+  <main>
+    <h1>Visualizer</h1>
+    <section>
+      {
+        Object.keys(data).map((key) => {
+          return (
+            <div >
+              <h2>{key}</h2>
+              <div class="visualizer">
+              {
+                data[key].map((sample) => {
+                  
+                  const img =   `/data/img/${sample.img}`;
+                
+                  return (
+                    <div class="drawing">
+                      <h3>{sample.drawing}</h3>
+                      <img src={img} decoding="async" 
+      loading="lazy" alt={sample.drawing} />
+                    </div>
+                  )
+                })
+              }
+
+              </div>
+            </div>
+          )
+        })
+      }
+    </section>
+  </main>
+</Layout>
+
+<style>
+  main {
+    color: white;
+    width: 100% !important;
+
+  }
+  .visualizer{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    
+  }
+  .drawing {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+    padding: 2rem 2rem;
+    color: black;
+    font-size: .8rem;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    object-fit: cover;
+  }
+</style>
