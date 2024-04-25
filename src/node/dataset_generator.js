@@ -48,5 +48,7 @@ function generateImageFile(outputFile, paths) {
 fs.writeFileSync(constants.SAMPLES, JSON.stringify(samples));
 fs.writeFileSync(
   constants.SAMPLES_JS,
-  `const samples = ${JSON.stringify(samples)};`
+  `const samples = ${JSON.stringify(samples)};
+  export default samples;
+  `
 );

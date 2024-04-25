@@ -16,6 +16,7 @@ utils.groupBy = (key, samples) => {
           {
             drawing: curr.label,
             img: `${i + 1}.png`,
+            id: i + 1,
           },
         ],
       };
@@ -23,6 +24,7 @@ utils.groupBy = (key, samples) => {
       acc[curr[key]].drawings.push({
         drawing: curr.label,
         img: `${i + 1}.png`,
+        id: i + 1,
       });
     }
 
@@ -40,6 +42,17 @@ utils.byStudent = (studentsData) => {
   });
 
   return byStudent;
+};
+
+utils.styles = {
+  car: { color: "gray", text: "🚗" },
+  fish: { color: "red", text: "🐟" },
+  house: { color: "yellow", text: "🏠" },
+  tree: { color: "green", text: "🌲" },
+  bicycle: { color: "cyan", text: "🚲" },
+  guitar: { color: "blue", text: "🎸" },
+  pencil: { color: "magenta", text: "📝" },
+  clock: { color: "lightgray", text: "⏰" },
 };
 
 export default utils;
