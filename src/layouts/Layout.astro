@@ -40,25 +40,49 @@ const { title } = Astro.props;
 		background: #13151a;
 		
 	}
-	.clear-button {
+
+	main {
+		
+		max-width: 90%;
+		margin-inline: auto;
+		
+	}
+	
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+		color: white;
+		
+	}
+
+	.btn {
 		cursor: pointer;
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: 5px;
     max-width: max-content;
     font-size: 1rem;
     letter-spacing: .1rem;
 	}
 
-	.clear-button:hover {
-		background-color: lavender;
-	}
-
-	.clear-button:disabled{
+	.btn:hover {
 		background-color: lightgray;
 	}
 
-	.clear-button:disabled:hover {
+	.btn:disabled{
 		background-color: lightgray;
+	}
+
+	.btn:disabled:hover {
+		background-color: lightgray;
+	}
+
+	input {
+		padding: 10px 20px;
+		font-size: 1rem;
+		border-radius: 5px;
 	}
 	
 </style>

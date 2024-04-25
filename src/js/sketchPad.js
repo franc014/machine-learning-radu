@@ -1,10 +1,11 @@
-import { draw } from "../js/draw.js";
+import { draw } from "../common/draw.js";
 export class Sketchpad {
   constructor(container, size = 400) {
     this.canvas = document.createElement("canvas");
     this.undoBtn = document.createElement("button");
     this.undoBtn.textContent = "Clear";
     this.undoBtn.classList.add("clear-button");
+    this.undoBtn.classList.add("btn");
 
     this.canvas.width = size;
     this.canvas.height = size;
@@ -22,8 +23,7 @@ export class Sketchpad {
     this.ctx.lineJoin = "round";
     this.#addEventListeners();
 
-    this.paths = [];
-    this.isDrawing = false;
+    this.reset();
   }
 
   #addEventListeners() {
@@ -41,7 +41,9 @@ export class Sketchpad {
       }
     };
 
-    this.canvas.onmouseup = () => {
+    //event on document, so at the borders of the canvas, it stops drawing
+    // the same for ontouchend for mobile
+    document.onmouseup = () => {
       this.isDrawing = false;
     };
 
@@ -53,8 +55,8 @@ export class Sketchpad {
       const loc = event.touches[0];
       this.canvas.onmousemove(loc);
     };
-    this.canvas.ontouchend = () => {
-      this.canvas.onmouseup(loc);
+    document.ontouchend = () => {
+      document.onmouseup(loc);
     };
 
     this.undoBtn.onclick = () => {
@@ -85,6 +87,12 @@ export class Sketchpad {
 
   #undo() {
     this.paths.pop();
+    this.#redraw();
+  }
+
+  reset() {
+    this.paths = [];
+    this.isDrawing = false;
     this.#redraw();
   }
 }

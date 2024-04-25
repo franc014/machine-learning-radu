@@ -4,6 +4,13 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="Sketchpad">
 	<main>
 		<h1>Data Creator</h1>
+		<div>
+			<input type="text" placeholder="Type your name" id="student" name="student">
+			<span id="instructions" ></span>
+			<button id="submit" class="btn btn-submit-student">Submit</button>
+			<button id="next" class="btn btn-next-draw">Next</button>
+			<button id="save" class="btn btn-next-save">Save</button>
+		</div>
 		<div id="sketchPadContainer">
 
 		</div>
@@ -11,27 +18,39 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
-	main {
-		
-		display: grid;
-		place-items: center;
-	}
 	
-	h1 {
-		font-size: 4rem;
-		font-weight: 700;
-		line-height: 1;
-		text-align: center;
-		margin-bottom: 1em;
-		color: white;
+	h1 ~ div {
+		margin-bottom: 1rem;
+		display: flex;
+		gap:1rem;
+		align-items: center;
 	}
 
 	#sketchPadContainer {
+		visibility: hidden;
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
 		align-items: center;
 	}
+
+	#next {
+		display: none;
+	}
+	#save {
+		display: none;
+	}
+
+
+	#instructions {
+		font-size: 1.2rem;
+		letter-spacing: 2px;
+		line-height: 1;
+		text-align: center;
+		color: white;
+	}
+
+
 
 </style>
 
@@ -39,6 +58,91 @@ import Layout from '../layouts/Layout.astro';
 	import { Sketchpad } from '../js/sketchPad.js';
 
 	const container = document.querySelector('#sketchPadContainer');
+	const instructions = document.querySelector('#instructions');
+	const submitBtn = document.querySelector('.btn-submit-student');
+	const nextBtn = document.querySelector('.btn-next-draw');
+	const saveBtn = document.querySelector('.btn-next-save');
+	const std = document.querySelector('#student');
+
 
 	const sketchpad = new Sketchpad(container);
+	let data = {
+		student: null,
+		session: new Date().getTime(),
+		drawings: {},
+	}
+
+	let index = 0;
+	const labels = ['car','fish','house','tree','bycicle','guitar','pencil','clock'];
+
+	submitBtn.addEventListener('click', handleSubmit);
+	nextBtn.addEventListener('click', handleNext);
+	saveBtn.addEventListener('click', handleSave);
+
+	function handleSave(){
+		instructions.textContent = `Take your downloaded file and place it alongside the others in the dataset`;
+		const element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)));
+		const fileName = data.session+'.json';
+		element.setAttribute('download', fileName);
+		element.style.display = 'none';
+		document.body.appendChild(element);
+		element.click();
+		document.body.removeChild(element);
+		saveBtn.style.display = 'none';
+	}
+
+	function handleNext() {
+	
+		if(sketchpad.paths.length===0){
+			alert('Please draw something first!');
+			return;
+		}
+		data.drawings[labels[index]] = sketchpad.paths;
+		sketchpad.reset();
+
+		if(index < labels.length-1) {
+			index++;
+			const nextLabel = labels[index];
+			instructions.textContent = `Please draw a ${nextLabel}`;
+		}else {
+			toggleElements('end');
+		}
+		
+
+
+
+		console.log(data);
+	}
+
+	function handleSubmit() {
+		if (!std.value) {
+			alert('Please enter your name');
+			return;
+		}
+		data.student = std.value;
+	
+		const label = labels[index];
+		
+		instructions.textContent = `Please draw a ${label}`;
+
+		toggleElements('start');
+	}
+  function toggleElements(stage) {
+		if (stage === 'start') {
+			container.style.visibility = 'visible';
+			submitBtn.style.display = 'none';
+			nextBtn.style.display = 'block';
+			std.style.display = 'none';
+		}else {
+			container.style.visibility = 'hidden';
+			nextBtn.style.display = 'none';
+			saveBtn.style.display = 'block';
+			instructions.textContent = 'Thanks!';
+		}
+
+		
+		
+	} 
+
 </script>
