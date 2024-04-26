@@ -3,23 +3,20 @@ import Layout from "../layouts/Layout.astro";
 import samples from '../common/js_objects/samples.js';
 import utils from '../common/utils.js';
 
-const data = utils.groupBy('student_id',samples);
-const students = utils.byStudent(data);
+const data = await utils.groupByV2('student_id',samples);
+
+const students = await utils.byStudentV2(data);
 
 ---
-
 <Layout title="Visualizer">
   <main>
     <h1>Visualizer</h1>
     <div class="chart-container">
 
-    </div>
+     </div>
     <div>
       {
         students.map((student) => {
-         
-         
-          
           return (
             <section>
               <h2>{student.student}</h2> 
@@ -31,7 +28,7 @@ const students = utils.byStudent(data);
                     <div class="drawing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
                       <h3>{drawing.drawing}</h3>
                       <img src={`/data/img/${drawing.img}`} decoding="async"
-      loading="lazy" alt={drawing.drawing} />
+                      loading="lazy" alt={drawing.drawing} />
                     </div>
                   )
                 })
@@ -91,14 +88,14 @@ const students = utils.byStudent(data);
 
 
   const options = {
-    size: 400,
+    size: 600,
     axesLabels: featureNames,
     styles: utils.styles,
     transparency: 0.7,
     icon: "image",
   }
 
-  graphics.generateImages(utils.styles,10);
+  graphics.generateImages(utils.styles,15);
 
 
   const chart = new Chart(document.querySelector('.chart-container'), samples, options,handleClick);
@@ -107,11 +104,11 @@ const students = utils.byStudent(data);
   drawings.forEach((drawing) => {
     drawing.addEventListener('click', (e) => {
       const sample = samples.find(sample => sample.id === Number(e.currentTarget.dataset.sample));
-      handleClick(sample);
+      handleClick(sample,false);
     });
   });
 
-  function handleClick(sample) {
+  function handleClick(sample,doScroll=true) {
     if(!sample) {
       document.querySelectorAll('.emphasize').forEach(el => {
       el.classList.remove('emphasize');
@@ -135,7 +132,7 @@ const students = utils.byStudent(data);
     console.log(`sample_${sample.id}`);
 
     el.classList.add('emphasize');
-    el.scrollIntoView({behavior: 'auto', block: 'center'});
+    if(doScroll) el.scrollIntoView({behavior: 'smooth'});
     chart.selectSample(sample);
   }
 
