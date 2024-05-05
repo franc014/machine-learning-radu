@@ -298,7 +298,7 @@ class Chart {
   #drawSamples(samples) {
     const { ctx, dataBounds, pixelBounds } = this;
     for (const sample of samples) {
-      const { point, label } = sample;
+      const { point, label, student_name } = sample;
 
       const pixelLoc = math.remapPoint(dataBounds, pixelBounds, point);
       switch (this.icon) {

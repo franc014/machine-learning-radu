@@ -132,7 +132,7 @@ const students = await utils.byStudentV2(data);
     console.log(`sample_${sample.id}`);
 
     el.classList.add('emphasize');
-    if(doScroll) el.scrollIntoView({behavior: 'smooth'});
+    if(doScroll) el.scrollIntoView({behavior: 'auto'});
     chart.selectSample(sample);
   }
 
