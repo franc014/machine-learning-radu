@@ -11,10 +11,18 @@ for (const sample of samples) {
   const paths = JSON.parse(
     fs.readFileSync(constants.JSON_DIR + "/" + sample.id + ".json")
   );
-  sample.point = [features.getPathCount(paths), features.getPointCount(paths)];
+  const functions = features.inUse.map((feature) => {
+    return feature.function;
+  });
+  sample.point = functions.map((func) => {
+    return func(paths);
+  });
 }
 
-const featureNames = ["Path Count", "Point Count"];
+const featureNames = features.inUse.map((feature) => {
+  return feature.name;
+});
+
 const featuresString = JSON.stringify({
   featureNames,
   samples: samples.map((sample) => {
