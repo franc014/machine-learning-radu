@@ -20,6 +20,9 @@ class Chart {
     this.margin = options.size * 0.11;
     this.transparency = options.transparency || 1;
 
+    this.dynamicPoint = null;
+    this.nearestSample = null;
+
     this.dataTrans = {
       offset: [0, 0],
       scale: 1,
@@ -113,6 +116,17 @@ class Chart {
     };
   }
 
+  showDynamicPoint(point, label, nearestSample) {
+    this.dynamicPoint = { point, label };
+    this.nearestSample = nearestSample;
+    this.#draw();
+  }
+
+  hideDynamicPoint() {
+    this.dynamicPoint = null;
+    this.#draw();
+  }
+
   #updateDataBounds(offset, scale) {
     const { dataBounds, defaultDataBounds: def } = this;
     dataBounds.left = def.left + offset[0];
@@ -167,10 +181,14 @@ class Chart {
     const maxX = Math.max(...x);
     const minY = Math.min(...y);
     const maxY = Math.max(...y);
+
+    const deltaX = maxX - minX;
+    const deltaY = maxY - minY;
+    const maxDelta = Math.max(deltaX, deltaY);
     const bounds = {
       left: minX,
-      right: maxX,
-      top: maxY,
+      right: minX + maxDelta,
+      top: minY + maxDelta,
       bottom: minY,
     };
     return bounds;
@@ -296,9 +314,9 @@ class Chart {
   }
 
   #drawSamples(samples) {
-    const { ctx, dataBounds, pixelBounds } = this;
+    const { ctx, dataBounds, pixelBounds, dynamicPoint } = this;
     for (const sample of samples) {
-      const { point, label, student_name } = sample;
+      const { point, label } = sample;
 
       const pixelLoc = math.remapPoint(dataBounds, pixelBounds, point);
       switch (this.icon) {
@@ -316,6 +334,21 @@ class Chart {
           graphics.drawPoint(ctx, pixelLoc, this.styles[label].color);
           break;
       }
+    }
+    if (dynamicPoint) {
+      const { point, label } = dynamicPoint;
+      const pixelLoc = math.remapPoint(dataBounds, pixelBounds, point);
+      graphics.drawPoint(ctx, pixelLoc, "rgba(255,255,255,0.7)", 100000);
+      graphics.drawImage(ctx, this.styles[label].image, pixelLoc);
+      graphics.drawPoint(ctx, pixelLoc, this.styles[label].color, 10);
+      ctx.beginPath();
+      ctx.moveTo(...pixelLoc);
+      ctx.lineTo(
+        ...math.remapPoint(dataBounds, pixelBounds, this.nearestSample.point)
+      );
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
   }
 }

@@ -47,6 +47,13 @@ math.scale = (p, scaler) => {
   return [p[0] * scaler, p[1] * scaler];
 };
 
+/**
+ * Calculates the Euclidean distance between two points in a 2D space.
+ *
+ * @param {Array} p1 - The first point in the form of an array [x, y].
+ * @param {Array} p2 - The second point in the form of an array [x, y].
+ * @return {number} The distance between the two points.
+ */
 math.distance = (p1, p2) => {
   return Math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2);
 };
@@ -55,6 +62,13 @@ math.formatNumber = (n, dec = 0) => {
   return n.toFixed(dec);
 };
 
+/**
+ * Finds the index of the nearest point in an array of points to a given location.
+ *
+ * @param {Array} loc - The location to find the nearest point to.
+ * @param {Array} points - The array of points to search through.
+ * @return {number} The index of the nearest point.
+ */
 math.getNearest = (loc, points) => {
   let minDist = Number.MAX_SAFE_INTEGER;
   let nearestIndex = 0;

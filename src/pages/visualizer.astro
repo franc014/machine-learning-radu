@@ -2,10 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import samples from '../common/js_objects/samples.js';
 import utils from '../common/utils.js';
-import SketchPad from "../components/SketchPad.astro";
 
 const data = await utils.groupByV2('student_id',samples);
-
 const students = await utils.byStudentV2(data);
 
 ---
@@ -14,18 +12,16 @@ const students = await utils.byStudentV2(data);
     <h1>Visualizer</h1>
     <button>Show Sketchpad</button>
   </header>
-  <main class="hide-image-grid">
-
-   
+  <main >
 
     <section class="app-container hide-image-grid">
 
-    
-   
     <div class="container">
-      <div class="sketchpad">
-        <SketchPad />
+     
+      <div class="sketchpad-container">
+
       </div>
+   
       <div class="chart-container">
   
       </div>
@@ -103,8 +99,6 @@ const students = await utils.byStudentV2(data);
     position: relative;
   }
 
-
-
   .visualizer{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
@@ -131,7 +125,7 @@ const students = await utils.byStudentV2(data);
   .emphasize {
     background-color: hsl(12, 80%, 59%);
   }
-  .sketchpad {
+  .sketchpad-container {
     position: fixed;
     left: 0;
     margin-left: 2rem;
@@ -140,6 +134,10 @@ const students = await utils.byStudentV2(data);
     background-color: white;
     padding: 1rem;
     z-index: 1;
+    display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		align-items: center;
     
   }
   .chart-container {
@@ -150,6 +148,7 @@ const students = await utils.byStudentV2(data);
     top: 70%;
     transform: translateY(-70%);
   }
+  
 </style>
 
 <script>
@@ -158,6 +157,15 @@ const students = await utils.byStudentV2(data);
   import utils from '../common/utils.js';
   import Chart from '../js/chart.js';
   import graphics from '../js/graphics.js';
+
+  import { Sketchpad } from '../js/sketchPad.js';
+  import featureUtils from '../common/features.js';
+  const container = document.querySelector('.sketchpad-container');
+  const labelEl = document.createElement('p');
+
+  labelEl.style.color = 'hsl(122, 80%, 19%)';
+  labelEl.style.fontSize = '2rem';
+  container.appendChild(labelEl);
 
 
   const { featureNames,samples } = features;
@@ -205,11 +213,41 @@ const students = await utils.byStudentV2(data);
       el.classList.remove('emphasize');
     });
 
-    console.log(`sample_${sample.id}`);
 
     el.classList.add('emphasize');
     if(doScroll) el.scrollIntoView({behavior: 'smooth'});
     chart.selectSample(sample);
   }
+
+
+  function classify(point) {
+    const samplePoints = samples.map(sample => sample.point);
+    const index = utils.getNearest(point, samplePoints); 
+    const nearestSample = samples[index];
+    return {label: nearestSample.label, nearestSample};
+  }
+ 
+  function onDrawingUpdate(paths){
+    const funcs = featureUtils.inUse.map((feature) => {
+        return feature.function;
+    });
+   
+    const point = funcs.map((func) => {
+      return func(paths);
+    });
+
+    const {label, nearestSample} = classify(point);
+    console.log(label);
+
+    showNearestLabel(label);
+
+    chart.showDynamicPoint(point,label,nearestSample);
+  }
+
+  function showNearestLabel(label) {
+    labelEl.innerText = `Is it a ${label}?`;
+  }
+
+  const sketchpad = new Sketchpad(container,onDrawingUpdate);
 
 </script>
