@@ -1,6 +1,7 @@
 import { draw } from "../common/draw.js";
 export class Sketchpad {
-  constructor(container, size = 400) {
+  constructor(container, onUpdate = null, size = 400) {
+    console.log("Sketchpad initialized");
     this.canvas = document.createElement("canvas");
     this.undoBtn = document.createElement("button");
     this.undoBtn.textContent = "Clear";
@@ -23,6 +24,7 @@ export class Sketchpad {
     this.ctx.lineJoin = "round";
     this.#addEventListeners();
 
+    this.onUpdate = onUpdate;
     this.reset();
   }
 
@@ -74,6 +76,7 @@ export class Sketchpad {
       this.undoBtn.ariaDisabled = "true";
       this.undoBtn.disabled = true;
     }
+    if (this.onUpdate) this.onUpdate(this.paths);
   }
 
   #getMouse = (event) => {

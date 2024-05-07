@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import samples from '../common/js_objects/samples.js';
 import utils from '../common/utils.js';
+import SketchPad from "../components/SketchPad.astro";
 
 const data = await utils.groupByV2('student_id',samples);
 
@@ -9,50 +10,106 @@ const students = await utils.byStudentV2(data);
 
 ---
 <Layout title="Visualizer">
-  <main>
+  <header >
     <h1>Visualizer</h1>
-    <div class="chart-container">
+    <button>Show Sketchpad</button>
+  </header>
+  <main class="hide-image-grid">
 
-     </div>
-    <div>
-      {
-        students.map((student) => {
-          return (
-            <section>
-              <h2>{student.student}</h2> 
-              <div class="visualizer">
-              {
-                student.drawings.map((drawing) => {
-                
-                  return (
-                    <div class="drawing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
-                      <h3>{drawing.drawing}</h3>
-                      <img src={`/data/img/${drawing.img}`} decoding="async"
-                      loading="lazy" alt={drawing.drawing} />
-                    </div>
-                  )
-                })
-              }
-              </div>
-            </section>
-          )
-        })
-      }
+   
+
+    <section class="app-container hide-image-grid">
+
+    
+   
+    <div class="container">
+      <div class="sketchpad">
+        <SketchPad />
+      </div>
+      <div class="chart-container">
+  
+      </div>
+
+      <div class="visualizer-container">
+        {
+          students.map((student) => {
+            return (
+              <section>
+                <h2>{student.student}</h2> 
+                <div class="visualizer">
+                {
+                  student.drawings.map((drawing) => {
+                  
+                    return (
+                      <div class="drawing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
+                        <h3>{drawing.drawing}</h3>
+                        <img src={`/data/img/${drawing.img}`} decoding="async"
+                        loading="lazy" alt={drawing.drawing} />
+                      </div>
+                    )
+                  })
+                }
+                </div>
+              </section>
+            )
+          })
+        }
+      </div>
     </div>
     
   </main>
+</section>
 </Layout>
 
 <style>
-  main {
+
+  body {
     color: white;
     width: 100% !important;
+    
+    padding-top: 1rem;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0rem 2rem ;
+    padding-bottom: 2rem;
 
   }
-  .visualizer{
+
+  main {
+    position: relative;
+  }
+  .app-container.hide-image-grid::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: hsl(220, 10%, 40%,0.8);
+  }
+  .container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    gap:1rem;
+  }
+  .visualizer-container {
+    padding: 1rem;
+    border-radius: 1rem;
+    position: relative;
+  }
+
+
+
+  .visualizer{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap:1rem;
+   
     
   }
   .drawing {
@@ -72,7 +129,26 @@ const students = await utils.byStudentV2(data);
     object-fit: cover;
   }
   .emphasize {
-    background-color: blueviolet;
+    background-color: hsl(12, 80%, 59%);
+  }
+  .sketchpad {
+    position: fixed;
+    left: 0;
+    margin-left: 2rem;
+    top: 70%;
+    transform: translateY(-70%);
+    background-color: white;
+    padding: 1rem;
+    z-index: 1;
+    
+  }
+  .chart-container {
+    z-index: 1;
+    position: fixed;
+    right: 0;
+    margin-right: 2rem;
+    top: 70%;
+    transform: translateY(-70%);
   }
 </style>
 
@@ -88,7 +164,7 @@ const students = await utils.byStudentV2(data);
 
 
   const options = {
-    size: 600,
+    size: 400,
     axesLabels: featureNames,
     styles: utils.styles,
     transparency: 0.7,
@@ -132,7 +208,7 @@ const students = await utils.byStudentV2(data);
     console.log(`sample_${sample.id}`);
 
     el.classList.add('emphasize');
-    if(doScroll) el.scrollIntoView({behavior: 'auto'});
+    if(doScroll) el.scrollIntoView({behavior: 'smooth'});
     chart.selectSample(sample);
   }
 

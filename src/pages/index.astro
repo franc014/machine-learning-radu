@@ -1,4 +1,5 @@
 ---
+import SketchPad from '../components/SketchPad.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="Sketchpad">
@@ -11,9 +12,7 @@ import Layout from '../layouts/Layout.astro';
 			<button id="next" class="btn btn-next-draw">Next</button>
 			<button id="save" class="btn btn-next-save">Save</button>
 		</div>
-		<div id="sketchPadContainer">
-
-		</div>
+		<SketchPad />
 	</main>
 </Layout>
 
@@ -26,13 +25,7 @@ import Layout from '../layouts/Layout.astro';
 		align-items: center;
 	}
 
-	#sketchPadContainer {
-		visibility: hidden;
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		align-items: center;
-	}
+	
 
 	#next {
 		display: none;
@@ -109,9 +102,6 @@ import Layout from '../layouts/Layout.astro';
 			toggleElements('end');
 		}
 		
-
-
-
 		console.log(data);
 	}
 
