@@ -21,22 +21,22 @@ features.getHeight = (paths) => {
 };
 
 features.inUse = [
-  {
+  /* {
     name: "Path Count",
     function: features.getPathCount,
   },
   {
     name: "Point Count",
     function: features.getPointCount,
-  },
-  /* {
+  }, */
+  {
     name: "Width",
     function: features.getWidth,
   },
   {
     name: "Height",
     function: features.getHeight,
-  }, */
+  },
 ];
 
 export default features;

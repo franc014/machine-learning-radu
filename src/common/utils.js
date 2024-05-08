@@ -90,6 +90,43 @@ utils.getNearest = (loc, points) => {
   return nearestIndex;
 };
 
+utils.invLerp = (a, b, v) => {
+  return (v - a) / (b - a);
+};
+
+utils.normalizePoints = (points, minMax) => {
+  //min and max on each of the dimensions (features); can be two or more dimensions
+  let min, max;
+  // in the beginning, min and max are the values of the first point
+  min = [...points[0]];
+  max = [...points[0]];
+  const dimensions = points[0].length;
+
+  if (minMax) {
+    min = minMax.min;
+    max = minMax.max;
+  } else {
+    // then for each point remaining
+    for (let i = 1; i < points.length; i++) {
+      // loop over each dimension
+      for (let j = 0; j < dimensions; j++) {
+        // update min and max
+        min[j] = Math.min(min[j], points[i][j]);
+        max[j] = Math.max(max[j], points[i][j]);
+      }
+    }
+  }
+
+  // transform the points
+  for (let i = 0; i < points.length; i++) {
+    for (let j = 0; j < dimensions; j++) {
+      points[i][j] = utils.invLerp(min[j], max[j], points[i][j]);
+    }
+  }
+
+  return { min, max };
+};
+
 utils.styles = {
   car: { color: "gray", text: "🚗" },
   fish: { color: "red", text: "🐟" },
@@ -97,7 +134,7 @@ utils.styles = {
   tree: { color: "green", text: "🌲" },
   bicycle: { color: "cyan", text: "🚲" },
   guitar: { color: "blue", text: "🎸" },
-  pencil: { color: "magenta", text: "📝" },
+  pencil: { color: "magenta", text: "✎" },
   clock: { color: "lightgray", text: "⏰" },
 };
 

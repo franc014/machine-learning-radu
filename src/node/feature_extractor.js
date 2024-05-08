@@ -1,5 +1,6 @@
 import constants from "../common/constants.js";
 import features from "../common/features.js";
+import utils from "../common/utils.js";
 
 import fs from "fs";
 
@@ -18,6 +19,9 @@ for (const sample of samples) {
     return func(paths);
   });
 }
+
+// Normalize points
+const { min, max } = utils.normalizePoints(samples.map((s) => s.point));
 
 const featureNames = features.inUse.map((feature) => {
   return feature.name;
@@ -41,5 +45,14 @@ fs.writeFileSync(
     featureNames,
     samples,
   })};export default features;
+  `
+);
+
+fs.writeFileSync(
+  constants.MIN_MAX_JS,
+  `const minMax = ${JSON.stringify({
+    min,
+    max,
+  })};export default minMax;
   `
 );

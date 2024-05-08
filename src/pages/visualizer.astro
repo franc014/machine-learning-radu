@@ -154,6 +154,7 @@ const students = await utils.byStudentV2(data);
 <script>
 
   import features from '../common/js_objects/features.js';
+  import minMax from '../common/js_objects/minMax';
   import utils from '../common/utils.js';
   import Chart from '../js/chart.js';
   import graphics from '../js/graphics.js';
@@ -172,7 +173,7 @@ const students = await utils.byStudentV2(data);
 
 
   const options = {
-    size: 400,
+    size: 500,
     axesLabels: featureNames,
     styles: utils.styles,
     transparency: 0.7,
@@ -235,6 +236,8 @@ const students = await utils.byStudentV2(data);
     const point = funcs.map((func) => {
       return func(paths);
     });
+
+    utils.normalizePoints([point],minMax);
 
     const {label, nearestSample} = classify(point);
     console.log(label);
