@@ -41,6 +41,12 @@ fileNames.forEach((fileName) => {
 function generateImageFile(outputFile, paths) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   draw.paths(ctx, paths);
+  /* const box = getBox(paths);
+  ctx.beginPath();
+  ctx.strokeStyle = "red";
+  ctx.rect(box.x, box.y, box.width, box.height);
+  ctx.stroke(); */
+
   const buffer = canvas.toBuffer("image/png");
   fs.writeFileSync(outputFile, buffer);
 }
