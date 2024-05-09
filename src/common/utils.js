@@ -94,7 +94,66 @@ utils.invLerp = (a, b, v) => {
   return (v - a) / (b - a);
 };
 
+utils.mean = (points) => {
+  console.log("points", points);
+  //points is an array of array of points
+  //mean on each of the dimensions (features); can be two or more dimensions
+  //const meanCoords = [];
+  const dimensions = points[0].length;
+
+  const meanCoords = points.reduce((acc, point) => {
+    for (let i = 0; i < dimensions; i++) {
+      acc[i] = (acc[i] || 0) + point[i] / points.length;
+    }
+    return acc;
+  }, []);
+
+  return meanCoords;
+};
+
+utils.stdDeviation = (points) => {
+  //points is an array of array of points
+  const mean = utils.mean(points).map((m) => Number(m.toFixed(2)));
+
+  const deviation = points.map((point) => {
+    return point.map((p, i) => {
+      return (p - mean[i]) ** 2;
+    });
+  });
+
+  const sum = deviation.reduce((acc, curr) => {
+    for (let i = 0; i < curr.length; i++) {
+      acc[i] = (acc[i] || 0) + curr[i];
+    }
+    return acc;
+  });
+
+  const stdDev = sum.map((s) => {
+    return Math.sqrt(s / points.length);
+  });
+
+  return stdDev;
+};
+
+utils.standardizePoints = (points) => {
+  console.log("points std", points);
+  //points is an array of array of points
+  const mean = utils.mean(points).map((m) => Number(m.toFixed(2)));
+
+  console.log("mean", mean);
+  const deviation = utils.stdDeviation(points).map((d) => Number(d.toFixed(2)));
+
+  console.log("deviation", deviation);
+  // transform the points
+  for (let i = 0; i < points.length; i++) {
+    for (let j = 0; j < points[i].length; j++) {
+      points[i][j] = (points[i][j] - mean[j]) / deviation[j] || 1;
+    }
+  }
+};
+
 utils.normalizePoints = (points, minMax) => {
+  //points is an array of array of points
   //min and max on each of the dimensions (features); can be two or more dimensions
   let min, max;
   // in the beginning, min and max are the values of the first point

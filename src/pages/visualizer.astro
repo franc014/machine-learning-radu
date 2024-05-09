@@ -229,6 +229,8 @@ const students = await utils.byStudentV2(data);
   }
  
   function onDrawingUpdate(paths){
+
+    console.log({paths});
     const funcs = featureUtils.inUse.map((feature) => {
         return feature.function;
     });
@@ -237,7 +239,13 @@ const students = await utils.byStudentV2(data);
       return func(paths);
     });
 
-    utils.normalizePoints([point],minMax);
+    console.log({point});
+
+    //utils.normalizePoints([point],minMax);
+
+     utils.standardizePoints([point]);
+
+    
 
     const {label, nearestSample} = classify(point);
     console.log(label);

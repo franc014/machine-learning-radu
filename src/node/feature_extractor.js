@@ -21,7 +21,11 @@ for (const sample of samples) {
 }
 
 // Normalize points
-const { min, max } = utils.normalizePoints(samples.map((s) => s.point));
+//const { min, max } = utils.normalizePoints(samples.map((s) => s.point));
+
+//utils.standardizePoints(samples.slice(0, 5).map((s) => s.point));
+
+utils.standardizePoints(samples.map((s) => s.point));
 
 const featureNames = features.inUse.map((feature) => {
   return feature.name;
@@ -48,11 +52,11 @@ fs.writeFileSync(
   `
 );
 
-fs.writeFileSync(
+/* fs.writeFileSync(
   constants.MIN_MAX_JS,
   `const minMax = ${JSON.stringify({
     min,
     max,
   })};export default minMax;
   `
-);
+); */
