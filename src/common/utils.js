@@ -90,6 +90,20 @@ utils.getNearest = (loc, points) => {
   return nearestIndex;
 };
 
+utils.getNearestK = (loc, points, k = 1) => {
+  const obj = points.map((val, ind) => {
+    return { ind, val };
+  });
+
+  // We sorted so that the nearest ones will be at the top
+  const sorted = obj.sort((a, b) => {
+    return utils.distance(loc, a.val) - utils.distance(loc, b.val);
+  });
+
+  const indeces = sorted.map((item) => item.ind);
+  return indeces.slice(0, k);
+};
+
 utils.invLerp = (a, b, v) => {
   return (v - a) / (b - a);
 };

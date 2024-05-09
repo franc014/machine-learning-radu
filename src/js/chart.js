@@ -22,6 +22,7 @@ class Chart {
 
     this.dynamicPoint = null;
     this.nearestSample = null;
+    this.nearestSamples = null;
 
     this.dataTrans = {
       offset: [0, 0],
@@ -119,6 +120,11 @@ class Chart {
   showDynamicPoint(point, label, nearestSample) {
     this.dynamicPoint = { point, label };
     this.nearestSample = nearestSample;
+    this.#draw();
+  }
+  showDynamicPointK(point, label, nearestSamples) {
+    this.dynamicPoint = { point, label };
+    this.nearestSamples = nearestSamples;
     this.#draw();
   }
 
@@ -341,14 +347,15 @@ class Chart {
       graphics.drawPoint(ctx, pixelLoc, "rgba(255,255,255,0.7)", 100000);
       graphics.drawImage(ctx, this.styles[label].image, pixelLoc);
       graphics.drawPoint(ctx, pixelLoc, this.styles[label].color, 10);
-      ctx.beginPath();
-      ctx.moveTo(...pixelLoc);
-      ctx.lineTo(
-        ...math.remapPoint(dataBounds, pixelBounds, this.nearestSample.point)
-      );
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
-      ctx.stroke();
+
+      for (const sample of this.nearestSamples) {
+        ctx.beginPath();
+        ctx.moveTo(...pixelLoc);
+        ctx.lineTo(...math.remapPoint(dataBounds, pixelBounds, sample.point));
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
     }
   }
 }

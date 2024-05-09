@@ -223,9 +223,26 @@ const students = await utils.byStudentV2(data);
 
   function classify(point) {
     const samplePoints = samples.map(sample => sample.point);
-    const index = utils.getNearest(point, samplePoints); 
-    const nearestSample = samples[index];
-    return {label: nearestSample.label, nearestSample};
+    const indeces = utils.getNearestK(point, samplePoints,10); 
+
+
+    const nearestSamples = indeces.map(ind => samples[ind]);
+    const labels = nearestSamples.map(sample => sample.label);
+
+    const counts = {};
+
+    labels.forEach((label) => {
+      if (!counts[label]) {
+        counts[label] = 1;
+      }
+      counts[label]++;
+    });
+
+    const max = Math.max(...Object.values(counts));
+
+    const label = labels.find(label => counts[label] === max);
+
+    return {label, nearestSamples};
   }
  
   function onDrawingUpdate(paths){
@@ -239,12 +256,12 @@ const students = await utils.byStudentV2(data);
 
     utils.normalizePoints([point],minMax);
 
-    const {label, nearestSample} = classify(point);
-    console.log(label);
+    const {label, nearestSamples} = classify(point);
+    
 
     showNearestLabel(label);
 
-    chart.showDynamicPoint(point,label,nearestSample);
+    chart.showDynamicPointK(point,label,nearestSamples);
   }
 
   function showNearestLabel(label) {
