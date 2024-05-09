@@ -94,11 +94,16 @@ utils.invLerp = (a, b, v) => {
   return (v - a) / (b - a);
 };
 
+/**
+ * Calculates the mean of an array of points.
+ *
+ * @param {Array<Array<number>>} points - The array of points to calculate the mean of.
+ * @return {Array<number>} An array containing the mean of each dimension.
+ */
 utils.mean = (points) => {
-  console.log("points", points);
   //points is an array of array of points
   //mean on each of the dimensions (features); can be two or more dimensions
-  //const meanCoords = [];
+
   const dimensions = points[0].length;
 
   const meanCoords = points.reduce((acc, point) => {
@@ -111,8 +116,13 @@ utils.mean = (points) => {
   return meanCoords;
 };
 
+/**
+ * Calculates the standard deviation of the given points array.
+ *
+ * @param {Array<Array<number>>} points - The array of points to calculate the standard deviation.
+ * @return {Array<number>} An array containing the standard deviation for each dimension.
+ */
 utils.stdDeviation = (points) => {
-  //points is an array of array of points
   const mean = utils.mean(points).map((m) => Number(m.toFixed(2)));
 
   const deviation = points.map((point) => {
@@ -135,23 +145,45 @@ utils.stdDeviation = (points) => {
   return stdDev;
 };
 
-utils.standardizePoints = (points) => {
-  console.log("points std", points);
-  //points is an array of array of points
-  const mean = utils.mean(points).map((m) => Number(m.toFixed(2)));
+/**
+ * Standardizes the given points by scaling each dimension to a range between 0 and 1, using the mean and standard deviation of the points.
+ *
+ * @param {Array<Array<number>>} points - The array of points to be standardized.
+ * @param {Object} [deviationVars] - An object containing the mean and deviation values for each dimension.
+ * @param {Array<number>} [deviationVars.mean] - The mean values for each dimension.
+ * @param {Array<number>} [deviationVars.deviation] - The deviation values for each dimension.
+ * @return {Object} An object containing the mean and deviation values of the standardized points.
+ */
+utils.standardizePoints = (points, deviationVars) => {
+  let mean;
+  let deviation;
 
-  console.log("mean", mean);
-  const deviation = utils.stdDeviation(points).map((d) => Number(d.toFixed(2)));
-
-  console.log("deviation", deviation);
+  if (deviationVars) {
+    mean = deviationVars.mean;
+    deviation = deviationVars.deviation;
+  } else {
+    mean = utils.mean(points).map((m) => Number(m.toFixed(2)));
+    deviation = utils.stdDeviation(points).map((d) => Number(d.toFixed(2)));
+  }
   // transform the points
   for (let i = 0; i < points.length; i++) {
     for (let j = 0; j < points[i].length; j++) {
-      points[i][j] = (points[i][j] - mean[j]) / deviation[j] || 1;
+      points[i][j] = ((points[i][j] - mean[j]) / deviation[j]).toFixed(2);
     }
   }
+
+  return { mean, deviation };
 };
 
+/**
+ * Normalizes an array of points by scaling each dimension to a range between 0 and 1.
+ *
+ * @param {Array<Array<number>>} points - The array of points to be normalized.
+ * @param {Object} [minMax] - An object containing the minimum and maximum values for each dimension.
+ * @param {Array<number>} [minMax.min] - The minimum values for each dimension.
+ * @param {Array<number>} [minMax.max] - The maximum values for each dimension.
+ * @return {Object} An object containing the minimum and maximum values of the normalized points.
+ */
 utils.normalizePoints = (points, minMax) => {
   //points is an array of array of points
   //min and max on each of the dimensions (features); can be two or more dimensions

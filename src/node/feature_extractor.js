@@ -25,7 +25,9 @@ for (const sample of samples) {
 
 //utils.standardizePoints(samples.slice(0, 5).map((s) => s.point));
 
-utils.standardizePoints(samples.map((s) => s.point));
+const { mean, deviation } = utils.standardizePoints(
+  samples.map((s) => s.point)
+);
 
 const featureNames = features.inUse.map((feature) => {
   return feature.name;
@@ -49,6 +51,15 @@ fs.writeFileSync(
     featureNames,
     samples,
   })};export default features;
+  `
+);
+
+fs.writeFileSync(
+  constants.STD_DEV_JS,
+  `const deviationVars = ${JSON.stringify({
+    mean,
+    deviation,
+  })};export default deviationVars;
   `
 );
 

@@ -11,9 +11,9 @@ features.getPointCount = (paths) => {
 
 features.getWidth = (paths) => {
   const points = paths.flat();
-  console.log("flat points", points);
+
   const x = points.map((p) => p[0]);
-  console.log(Math.max(...x) - Math.min(...x), "dif");
+
   return Math.max(...x) - Math.min(...x);
 };
 features.getHeight = (paths) => {

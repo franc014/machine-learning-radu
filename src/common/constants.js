@@ -15,5 +15,6 @@ constants.JS_OBJECTS = "../common/js_objects";
 constants.SAMPLES_JS = constants.JS_OBJECTS + "/samples.js";
 constants.FEATURES_JS = constants.JS_OBJECTS + "/features.js";
 constants.MIN_MAX_JS = constants.JS_OBJECTS + "/minMax.js";
+constants.STD_DEV_JS = constants.JS_OBJECTS + "/stdDev.js";
 
 export default constants;

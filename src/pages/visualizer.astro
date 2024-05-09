@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import samples from '../common/js_objects/samples.js';
 import utils from '../common/utils.js';
 
+
 const data = await utils.groupByV2('student_id',samples);
 const students = await utils.byStudentV2(data);
 
@@ -155,6 +156,7 @@ const students = await utils.byStudentV2(data);
 
   import features from '../common/js_objects/features.js';
   import minMax from '../common/js_objects/minMax';
+  import stdDev from '../common/js_objects/stdDev.js';
   import utils from '../common/utils.js';
   import Chart from '../js/chart.js';
   import graphics from '../js/graphics.js';
@@ -243,7 +245,7 @@ const students = await utils.byStudentV2(data);
 
     //utils.normalizePoints([point],minMax);
 
-     utils.standardizePoints([point]);
+    utils.standardizePoints([point],stdDev);
 
     
 
