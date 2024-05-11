@@ -1,4 +1,6 @@
 const utils = {};
+import fs from "fs";
+
 utils.formatPercent = (num) => `${(num * 100).toFixed(2)}%`;
 utils.printProgress = (count, max) => {
   process.stdout.clearLine();
@@ -18,6 +20,7 @@ utils.groupByV2 = (key, samples) => {
               drawing: curr.label,
               img: `${i + 1}.png`,
               id: i + 1,
+              correct: curr.correct,
             },
           ],
         };
@@ -26,6 +29,7 @@ utils.groupByV2 = (key, samples) => {
           drawing: curr.label,
           img: `${i + 1}.png`,
           id: i + 1,
+          correct: curr.correct,
         });
       }
 
@@ -141,6 +145,62 @@ utils.normalizePoints = (points, minMax) => {
   return { min, max };
 };
 
+utils.writeFeaturesToFile = (featureNames, samples, path) => {
+  const featuresString = JSON.stringify({
+    featureNames,
+    samples: samples.map((sample) => {
+      return {
+        point: sample.point,
+        label: sample.label,
+      };
+    }),
+  });
+
+  console.log(path);
+  fs.writeFileSync(path, featuresString);
+};
+
+utils.writeFeaturesToFileAsJS = (featureNames, samples, varName, jsPath) => {
+  fs.writeFileSync(
+    jsPath,
+    `const ${varName} = ${JSON.stringify({
+      featureNames,
+      samples,
+    })};export default ${varName};
+    `
+  );
+};
+
+utils.classify = (point, samples, k) => {
+  return new Promise(function (resolve, reject) {
+    const samplePoints = samples.map((sample) => sample.point);
+    const indeces = utils.getNearestK(point, samplePoints, k);
+
+    const nearestSamples = indeces.map((ind) => samples[ind]);
+    const labels = nearestSamples.map((sample) => sample.label);
+
+    const counts = {};
+
+    labels.forEach((label) => {
+      if (!counts[label]) {
+        counts[label] = 1;
+      }
+      counts[label]++;
+    });
+
+    const max = Math.max(...Object.values(counts));
+
+    const label = labels.find((label) => counts[label] === max);
+
+    resolve({ label, nearestSamples });
+  });
+};
+
+utils.writeFeaturesToFiles = (featureNames, samples, varName, path, jsPath) => {
+  utils.writeFeaturesToFile(featureNames, samples, path);
+  utils.writeFeaturesToFileAsJS(featureNames, samples, varName, jsPath);
+};
+
 utils.styles = {
   car: { color: "gray", text: "🚗" },
   fish: { color: "red", text: "🐟" },
@@ -151,5 +211,6 @@ utils.styles = {
   pencil: { color: "magenta", text: "✎" },
   clock: { color: "lightgray", text: "⏰" },
 };
+utils.styles["?"] = { color: "coral", text: "❓" };
 
 export default utils;

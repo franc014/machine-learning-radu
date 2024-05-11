@@ -20,12 +20,31 @@ for (const sample of samples) {
   });
 }
 
-// Normalize points
-const { min, max } = utils.normalizePoints(samples.map((s) => s.point));
-
 const featureNames = features.inUse.map((feature) => {
   return feature.name;
 });
+//Generating splits sets of data: training and testing
+console.log("GENERATING SPLITS");
+const trainingAmount = samples.length * 0.5;
+
+const training = [];
+const testing = [];
+
+for (let i = 0; i < samples.length; i++) {
+  if (i < trainingAmount) {
+    training.push(samples[i]);
+  } else {
+    testing.push(samples[i]);
+  }
+}
+
+// Normalize training
+const { min, max } = utils.normalizePoints(training.map((s) => s.point));
+// Normalize testing using min and max from training
+utils.normalizePoints(
+  testing.map((s) => s.point),
+  { min, max }
+);
 
 const featuresString = JSON.stringify({
   featureNames,
@@ -38,6 +57,24 @@ const featuresString = JSON.stringify({
 });
 
 fs.writeFileSync(constants.FEATURES, featuresString);
+
+//training
+utils.writeFeaturesToFiles(
+  featureNames,
+  training,
+  "training",
+  constants.TRAINING,
+  constants.TRAINING_JS
+);
+
+//testing
+utils.writeFeaturesToFiles(
+  featureNames,
+  testing,
+  "testing",
+  constants.TESTING,
+  constants.TESTING_JS
+);
 
 fs.writeFileSync(
   constants.FEATURES_JS,

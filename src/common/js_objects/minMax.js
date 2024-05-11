@@ -1,2 +1,2 @@
-const minMax = {"min":[2,0],"max":[968,480]};export default minMax;
+const minMax = {"min":[15,22],"max":[515,451]};export default minMax;
   

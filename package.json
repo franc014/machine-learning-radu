@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "astro": "^4.6.3",
-    "canvas": "^2.11.2"
+    "canvas": "^2.11.2",
+    "waait": "^1.0.5"
   }
 }

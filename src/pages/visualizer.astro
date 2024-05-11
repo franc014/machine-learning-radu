@@ -1,10 +1,60 @@
 ---
+import waait from 'waait';
 import Layout from "../layouts/Layout.astro";
-import samples from '../common/js_objects/samples.js';
+//import samples from '../common/js_objects/samples.js';
+import training from '../common/js_objects/training';
+import testing from '../common/js_objects/testing';
 import utils from '../common/utils.js';
 
-const data = await utils.groupByV2('student_id',samples);
-const students = await utils.byStudentV2(data);
+
+const trainingSamples = [...training.samples];
+const testingSamples = [...testing.samples];
+// when testing we pretend the testing samples don't have labels
+
+let totalCount = 0;
+let correctCount = 0;
+
+for(let testSample of testingSamples) {
+  
+    //console.log(testSample.label);
+
+  
+
+    testSample.truth = testSample.label //we need the truth attribute when calculating accuracy
+    testSample.label = '?';
+
+    
+    const res = await utils.classify(testSample.point,trainingSamples,5);
+    console.log(res,res.label);
+
+    await waait(20);
+
+    testSample.label = res.label;
+    if(res.label === testSample.truth) {
+      correctCount++;
+    }
+    totalCount++;
+    
+    /* console.log('2',testSample.label);
+    testSample.label = label;
+    if(label === testSample.truth) {
+      correctCount++;
+    }
+    totalCount++; */
+   
+}
+
+
+console.log({correctCount, totalCount, accuracy:correctCount/totalCount});
+
+
+
+const dataTraining = await utils.groupByV2('student_id',trainingSamples);
+const studentsTraining = await utils.byStudentV2(dataTraining);
+
+const dataTesting = await utils.groupByV2('student_id',testingSamples);
+const studentsTesting = await utils.byStudentV2(dataTesting);
+
 
 ---
 <Layout title="Visualizer">
@@ -14,7 +64,7 @@ const students = await utils.byStudentV2(data);
   </header>
   <main >
 
-    <section class="app-container hide-image-grid">
+    <section class="app-container">
 
     <div class="container">
      
@@ -27,17 +77,18 @@ const students = await utils.byStudentV2(data);
       </div>
 
       <div class="visualizer-container">
+        <h2>Accuracy:  %</h2>
         {
-          students.map((student) => {
+          studentsTraining.map((student) => {
             return (
               <section>
                 <h2>{student.student}</h2> 
                 <div class="visualizer">
                 {
                   student.drawings.map((drawing) => {
-                  
+                   
                     return (
-                      <div class="drawing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
+                      <div class={`drawing`} data-sample={drawing.id} id={`sample_${drawing.id}`}>
                         <h3>{drawing.drawing}</h3>
                         <img src={`/data/img/${drawing.img}`} decoding="async"
                         loading="lazy" alt={drawing.drawing} />
@@ -50,6 +101,32 @@ const students = await utils.byStudentV2(data);
             )
           })
         }
+        <h2>Testing</h2>
+
+{
+  studentsTesting.map((student) => {
+    return (
+      <section>
+        <h2>{student.student}</h2> 
+        <div class="visualizer">
+        {
+          student.drawings.map((drawing) => {
+           
+            
+            return (
+              <div class={`drawing ${drawing.correct?'correct':''}`} data-sample={drawing.id} id={`sample_${drawing.id}`}>
+                <h3>{drawing.drawing}</h3>
+                <img src={`/data/img/${drawing.img}`} decoding="async"
+                loading="lazy" alt={drawing.drawing} />
+              </div>
+            )
+          })
+        }
+        </div>
+      </section>
+    )
+  })
+}
       </div>
     </div>
     
@@ -117,6 +194,11 @@ const students = await utils.byStudentV2(data);
     color: black;
     font-size: .8rem;
   }
+
+  .drawing.correct {
+    background-color: hsl(84, 56%, 63%);
+  }
+
   img {
     display: block;
     max-width: 100%;
@@ -152,8 +234,12 @@ const students = await utils.byStudentV2(data);
 </style>
 
 <script>
-
+  import waait from 'waait';
   import features from '../common/js_objects/features.js';
+  import training from '../common/js_objects/training';
+  import testing from '../common/js_objects/testing';
+
+
   import minMax from '../common/js_objects/minMax';
   import utils from '../common/utils.js';
   import Chart from '../js/chart.js';
@@ -170,22 +256,24 @@ const students = await utils.byStudentV2(data);
 
 
   const { featureNames,samples } = features;
-
+  const trainingSamples = training.samples;
 
   const options = {
     size: 500,
     axesLabels: featureNames,
     styles: utils.styles,
     transparency: 0.7,
-    icon: "image",
+    icon: "text",
   }
 
   graphics.generateImages(utils.styles,15);
 
 
-  const chart = new Chart(document.querySelector('.chart-container'), samples, options,handleClick);
+  const chart = new Chart(document.querySelector('.chart-container'), trainingSamples, options,handleClick);
   const drawings = document.querySelectorAll('.drawing');
 
+
+  
   drawings.forEach((drawing) => {
     drawing.addEventListener('click', (e) => {
       const sample = samples.find(sample => sample.id === Number(e.currentTarget.dataset.sample));
@@ -201,7 +289,6 @@ const students = await utils.byStudentV2(data);
     return; 
     }
     
-
     const el = document.getElementById(`sample_${sample.id}`);
 
     if (el.classList.contains('emphasize')) {
@@ -220,32 +307,7 @@ const students = await utils.byStudentV2(data);
     chart.selectSample(sample);
   }
 
-
-  function classify(point) {
-    const samplePoints = samples.map(sample => sample.point);
-    const indeces = utils.getNearestK(point, samplePoints,10); 
-
-
-    const nearestSamples = indeces.map(ind => samples[ind]);
-    const labels = nearestSamples.map(sample => sample.label);
-
-    const counts = {};
-
-    labels.forEach((label) => {
-      if (!counts[label]) {
-        counts[label] = 1;
-      }
-      counts[label]++;
-    });
-
-    const max = Math.max(...Object.values(counts));
-
-    const label = labels.find(label => counts[label] === max);
-
-    return {label, nearestSamples};
-  }
- 
-  function onDrawingUpdate(paths){
+  async function onDrawingUpdate(paths){
     const funcs = featureUtils.inUse.map((feature) => {
         return feature.function;
     });
@@ -256,9 +318,8 @@ const students = await utils.byStudentV2(data);
 
     utils.normalizePoints([point],minMax);
 
-    const {label, nearestSamples} = classify(point);
+    const {label, nearestSamples} = await utils.classify(point,trainingSamples,8);
     
-
     showNearestLabel(label);
 
     chart.showDynamicPointK(point,label,nearestSamples);
@@ -268,6 +329,6 @@ const students = await utils.byStudentV2(data);
     labelEl.innerText = `Is it a ${label}?`;
   }
 
-  const sketchpad = new Sketchpad(container,onDrawingUpdate);
+   new Sketchpad(container,onDrawingUpdate);
 
 </script>
