@@ -1,7 +1,6 @@
 ---
-import waait from 'waait';
+
 import Layout from "../layouts/Layout.astro";
-//import samples from '../common/js_objects/samples.js';
 import training from '../common/js_objects/training';
 import testing from '../common/js_objects/testing';
 import utils from '../common/utils.js';
@@ -11,49 +10,16 @@ const trainingSamples = [...training.samples];
 const testingSamples = [...testing.samples];
 // when testing we pretend the testing samples don't have labels
 
-let totalCount = 0;
-let correctCount = 0;
-
-for(let testSample of testingSamples) {
-  
-    //console.log(testSample.label);
-
-  
-
-    testSample.truth = testSample.label //we need the truth attribute when calculating accuracy
-    testSample.label = '?';
-
-    
-    const res = await utils.classify(testSample.point,trainingSamples,5);
-    console.log(res,res.label);
-
-    await waait(20);
-
-    testSample.label = res.label;
-    if(res.label === testSample.truth) {
-      correctCount++;
-    }
-    totalCount++;
-    
-    /* console.log('2',testSample.label);
-    testSample.label = label;
-    if(label === testSample.truth) {
-      correctCount++;
-    }
-    totalCount++; */
-   
-}
-
-
-console.log({correctCount, totalCount, accuracy:correctCount/totalCount});
-
+let studentsTraining = [];
+let studentsTesting = [];
 
 
 const dataTraining = await utils.groupByV2('student_id',trainingSamples);
-const studentsTraining = await utils.byStudentV2(dataTraining);
+studentsTraining = await utils.byStudentV2(dataTraining);
 
 const dataTesting = await utils.groupByV2('student_id',testingSamples);
-const studentsTesting = await utils.byStudentV2(dataTesting);
+studentsTesting = await utils.byStudentV2(dataTesting);
+
 
 
 ---
@@ -114,7 +80,7 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
            
             
             return (
-              <div class={`drawing ${drawing.correct?'correct':''}`} data-sample={drawing.id} id={`sample_${drawing.id}`}>
+              <div class={`drawing`} data-set="testing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
                 <h3>{drawing.drawing}</h3>
                 <img src={`/data/img/${drawing.img}`} decoding="async"
                 loading="lazy" alt={drawing.drawing} />
@@ -273,6 +239,11 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
   const drawings = document.querySelectorAll('.drawing');
 
 
+
+
+
+
+
   
   drawings.forEach((drawing) => {
     drawing.addEventListener('click', (e) => {
@@ -330,5 +301,10 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
   }
 
    new Sketchpad(container,onDrawingUpdate);
+
+  console.log('hey...');
+  await waait(5000);
+  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples);
+  console.log({accuracy});
 
 </script>
