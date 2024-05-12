@@ -8,17 +8,15 @@ import utils from '../common/utils.js';
 
 const trainingSamples = [...training.samples];
 const testingSamples = [...testing.samples];
-// when testing we pretend the testing samples don't have labels
 
-let studentsTraining = [];
-let studentsTesting = [];
+
 
 
 const dataTraining = await utils.groupByV2('student_id',trainingSamples);
-studentsTraining = await utils.byStudentV2(dataTraining);
+const studentsTraining = await utils.byStudentV2(dataTraining);
 
 const dataTesting = await utils.groupByV2('student_id',testingSamples);
-studentsTesting = await utils.byStudentV2(dataTesting);
+const studentsTesting = await utils.byStudentV2(dataTesting);
 
 
 
@@ -77,8 +75,6 @@ studentsTesting = await utils.byStudentV2(dataTesting);
         <div class="visualizer">
         {
           student.drawings.map((drawing) => {
-           
-            
             return (
               <div class={`drawing`} data-set="testing" data-sample={drawing.id} id={`sample_${drawing.id}`}>
                 <h3>{drawing.drawing}</h3>
@@ -171,7 +167,7 @@ studentsTesting = await utils.byStudentV2(dataTesting);
     object-fit: cover;
   }
   .emphasize {
-    background-color: hsl(12, 80%, 59%);
+    background-color: hsl(12, 80%, 59%)!important;
   }
   .sketchpad-container {
     position: fixed;
@@ -215,6 +211,7 @@ studentsTesting = await utils.byStudentV2(dataTesting);
   import featureUtils from '../common/features.js';
   const container = document.querySelector('.sketchpad-container');
   const labelEl = document.createElement('p');
+ 
 
   labelEl.style.color = 'hsl(122, 80%, 19%)';
   labelEl.style.fontSize = '2rem';
@@ -229,7 +226,7 @@ studentsTesting = await utils.byStudentV2(dataTesting);
     axesLabels: featureNames,
     styles: utils.styles,
     transparency: 0.7,
-    icon: "text",
+    icon: "image",
   }
 
   graphics.generateImages(utils.styles,15);
@@ -237,14 +234,9 @@ studentsTesting = await utils.byStudentV2(dataTesting);
 
   const chart = new Chart(document.querySelector('.chart-container'), trainingSamples, options,handleClick);
   const drawings = document.querySelectorAll('.drawing');
+  const testingDrawings = document.querySelectorAll('[data-set="testing"]');
 
 
-
-
-
-
-
-  
   drawings.forEach((drawing) => {
     drawing.addEventListener('click', (e) => {
       const sample = samples.find(sample => sample.id === Number(e.currentTarget.dataset.sample));
@@ -303,8 +295,10 @@ studentsTesting = await utils.byStudentV2(dataTesting);
    new Sketchpad(container,onDrawingUpdate);
 
   console.log('hey...');
-  await waait(5000);
-  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples);
+  await waait(500);
+  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples,testingDrawings);
   console.log({accuracy});
+
+ 
 
 </script>

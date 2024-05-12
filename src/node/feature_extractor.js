@@ -46,18 +46,6 @@ utils.normalizePoints(
   { min, max }
 );
 
-const featuresString = JSON.stringify({
-  featureNames,
-  samples: samples.map((sample) => {
-    return {
-      point: sample.point,
-      label: sample.label,
-    };
-  }),
-});
-
-fs.writeFileSync(constants.FEATURES, featuresString);
-
 //training
 utils.writeFeaturesToFiles(
   featureNames,
@@ -75,6 +63,18 @@ utils.writeFeaturesToFiles(
   constants.TESTING,
   constants.TESTING_JS
 );
+
+const featuresString = JSON.stringify({
+  featureNames,
+  samples: samples.map((sample) => {
+    return {
+      point: sample.point,
+      label: sample.label,
+    };
+  }),
+});
+
+fs.writeFileSync(constants.FEATURES, featuresString);
 
 fs.writeFileSync(
   constants.FEATURES_JS,

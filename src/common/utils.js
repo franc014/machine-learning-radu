@@ -11,15 +11,15 @@ utils.printProgress = (count, max) => {
 
 utils.groupByV2 = (key, samples) => {
   return new Promise(function (resolve, reject) {
-    function groupByReducer(acc, curr, i) {
+    function groupByReducer(acc, curr) {
       if (!acc[curr[key]]) {
         acc[curr[key]] = {
           student: curr.student_name,
           drawings: [
             {
               drawing: curr.label,
-              img: `${i + 1}.png`,
-              id: i + 1,
+              img: `${curr.id}.png`,
+              id: curr.id,
               correct: curr.correct,
             },
           ],
@@ -27,8 +27,8 @@ utils.groupByV2 = (key, samples) => {
       } else {
         acc[curr[key]].drawings.push({
           drawing: curr.label,
-          img: `${i + 1}.png`,
-          id: i + 1,
+          img: `${curr.id}.png`,
+          id: curr.id,
           correct: curr.correct,
         });
       }
@@ -194,23 +194,36 @@ utils.classify = (point, samples, k) => {
   return { label, nearestSamples };
 };
 
-utils.calculateAccuracy = (testSamples, trainingSamples) => {
+utils.calculateAccuracy = (testSamples, trainingSamples, testingDrawings) => {
   let totalCount = 0;
   let correctCount = 0;
   return new Promise(function (resolve) {
     for (let testSample of testSamples) {
       testSample.truth = testSample.label; //we need the truth attribute when calculating accuracy
-      testSample.label = "?";
+      testSample.label = "?"; // when testing we pretend the testing samples don't have labels
 
       const res = utils.classify(testSample.point, trainingSamples, 5);
 
       testSample.label = res.label;
       testSample.correct = testSample.label === testSample.truth;
+
+      utils.highlightTestingSample(testingDrawings, testSample);
+
       correctCount += testSample.correct ? 1 : 0;
       totalCount++;
-      console.log(correctCount, "/", totalCount);
     }
     resolve(correctCount / totalCount);
+  });
+};
+
+utils.highlightTestingSample = (testingDrawings, testSample) => {
+  const { correct, id } = testSample;
+  testingDrawings.forEach((drawing) => {
+    const drawingId = Number(drawing.dataset.sample);
+
+    if (drawingId === id) {
+      drawing.classList.add(correct ? "correct" : "not-correct");
+    }
   });
 };
 
