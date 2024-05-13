@@ -64,25 +64,14 @@ utils.writeFeaturesToFiles(
   constants.TESTING_JS
 );
 
-const featuresString = JSON.stringify({
+// the whole dataset
+
+utils.writeFeaturesToFiles(
   featureNames,
-  samples: samples.map((sample) => {
-    return {
-      point: sample.point,
-      label: sample.label,
-    };
-  }),
-});
-
-fs.writeFileSync(constants.FEATURES, featuresString);
-
-fs.writeFileSync(
-  constants.FEATURES_JS,
-  `const features = ${JSON.stringify({
-    featureNames,
-    samples,
-  })};export default features;
-  `
+  samples,
+  "features",
+  constants.FEATURES,
+  constants.FEATURES_JS
 );
 
 fs.writeFileSync(

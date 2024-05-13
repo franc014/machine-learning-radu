@@ -31,6 +31,11 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
     <section class="app-container">
 
     <div class="container">
+
+      <div class="accuracy-container">
+        <h2>Accuracy</h2>
+        <p></p>
+      </div>
      
       <div class="sketchpad-container">
 
@@ -97,6 +102,24 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
 </Layout>
 
 <style>
+
+  :root {
+    --shadow-color: 232deg 90% 69%;
+    --shadow-elevation-medium:
+    0px 0.3px 0.3px hsl(var(--shadow-color) / 0.39),
+    0px 0.9px 1px -0.9px hsl(var(--shadow-color) / 0.37),
+    0px 2.4px 2.6px -1.8px hsl(var(--shadow-color) / 0.36),
+    0px 6px 6.6px -2.7px hsl(var(--shadow-color) / 0.34);
+    --shadow-elevation-high:
+    0px 0.3px 0.3px hsl(var(--shadow-color) / 0.36),
+    0px 1.6px 1.8px -0.4px hsl(var(--shadow-color) / 0.35),
+    0px 3.1px 3.4px -0.8px hsl(var(--shadow-color) / 0.34),
+    0px 5.1px 5.6px -1.2px hsl(var(--shadow-color) / 0.34),
+    0px 8.3px 9.1px -1.5px hsl(var(--shadow-color) / 0.33),
+    0px 13.1px 14.3px -1.9px hsl(var(--shadow-color) / 0.33),
+    0.1px 20.1px 22px -2.3px hsl(var(--shadow-color) / 0.32),
+    0.1px 29.8px 32.6px -2.7px hsl(var(--shadow-color) / 0.31);
+  }
 
   body {
     color: white;
@@ -192,6 +215,23 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
     top: 70%;
     transform: translateY(-70%);
   }
+  .accuracy-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.5rem;
+    position: fixed;
+    top: 50%;
+    left: 40%;
+    transform: translateY(-50%);
+    background-color: hsl(232, 90%, 69%);
+    box-shadow: var(--shadow-elevation-medium);
+    z-index: 30;
+    padding: 1rem;
+    border-radius: 1rem;
+
+  }
   
 </style>
 
@@ -211,6 +251,9 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
   import featureUtils from '../common/features.js';
   const container = document.querySelector('.sketchpad-container');
   const labelEl = document.createElement('p');
+  const accuracyEl = document.querySelector('.accuracy-container > p');
+
+
  
 
   labelEl.style.color = 'hsl(122, 80%, 19%)';
@@ -281,7 +324,7 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
 
     utils.normalizePoints([point],minMax);
 
-    const {label, nearestSamples} = await utils.classify(point,trainingSamples,8);
+    const {label, nearestSamples} = await utils.classify(point,trainingSamples,50);
     
     showNearestLabel(label);
 
@@ -296,8 +339,10 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
 
   console.log('hey...');
   await waait(500);
-  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples,testingDrawings);
+  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples,testingDrawings,20);
   console.log({accuracy});
+
+  accuracyEl.innerText = `${utils.formatPercent(accuracy)}`;
 
  
 

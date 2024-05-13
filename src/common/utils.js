@@ -194,7 +194,12 @@ utils.classify = (point, samples, k) => {
   return { label, nearestSamples };
 };
 
-utils.calculateAccuracy = (testSamples, trainingSamples, testingDrawings) => {
+utils.calculateAccuracy = (
+  testSamples,
+  trainingSamples,
+  testingDrawings,
+  neighbors = 5
+) => {
   let totalCount = 0;
   let correctCount = 0;
   return new Promise(function (resolve) {
@@ -202,7 +207,7 @@ utils.calculateAccuracy = (testSamples, trainingSamples, testingDrawings) => {
       testSample.truth = testSample.label; //we need the truth attribute when calculating accuracy
       testSample.label = "?"; // when testing we pretend the testing samples don't have labels
 
-      const res = utils.classify(testSample.point, trainingSamples, 5);
+      const res = utils.classify(testSample.point, trainingSamples, neighbors);
 
       testSample.label = res.label;
       testSample.correct = testSample.label === testSample.truth;
@@ -239,7 +244,7 @@ utils.styles = {
   tree: { color: "green", text: "🌲" },
   bicycle: { color: "cyan", text: "🚲" },
   guitar: { color: "blue", text: "🎸" },
-  pencil: { color: "magenta", text: "✎" },
+  pencil: { color: "magenta", text: "✏️" },
   clock: { color: "lightgray", text: "⏰" },
 };
 utils.styles["?"] = { color: "coral", text: "❓" };
