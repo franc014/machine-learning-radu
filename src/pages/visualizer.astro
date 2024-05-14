@@ -33,7 +33,6 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
     <div class="container">
 
       <div class="accuracy-container">
-        <h2>Accuracy</h2>
         <p></p>
       </div>
      
@@ -240,7 +239,7 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
   import features from '../common/js_objects/features.js';
   import training from '../common/js_objects/training';
   import testing from '../common/js_objects/testing';
-
+  import KNN from '../common/classifiers/knn.js';
 
   import minMax from '../common/js_objects/minMax';
   import utils from '../common/utils.js';
@@ -279,6 +278,7 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
   const drawings = document.querySelectorAll('.drawing');
   const testingDrawings = document.querySelectorAll('[data-set="testing"]');
 
+  const knn = new KNN(trainingSamples,50);
 
   drawings.forEach((drawing) => {
     drawing.addEventListener('click', (e) => {
@@ -324,7 +324,7 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
 
     utils.normalizePoints([point],minMax);
 
-    const {label, nearestSamples} = await utils.classify(point,trainingSamples,50);
+    const {label, nearestSamples} = knn.predict(point);
     
     showNearestLabel(label);
 
@@ -337,12 +337,11 @@ const studentsTesting = await utils.byStudentV2(dataTesting);
 
    new Sketchpad(container,onDrawingUpdate);
 
-  console.log('hey...');
-  await waait(500);
-  const accuracy = await utils.calculateAccuracy(testing.samples, training.samples,testingDrawings,20);
-  console.log({accuracy});
-
-  accuracyEl.innerText = `${utils.formatPercent(accuracy)}`;
+  //console.log('hey...');
+  //await waait(500);
+  const accuracy = await utils.calculateAccuracy(testing.samples,testingDrawings,knn);
+ 
+  accuracyEl.innerText = accuracy;
 
  
 

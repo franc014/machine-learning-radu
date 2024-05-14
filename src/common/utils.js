@@ -171,35 +171,7 @@ utils.writeFeaturesToFileAsJS = (featureNames, samples, varName, jsPath) => {
   );
 };
 
-utils.classify = (point, samples, k) => {
-  const samplePoints = samples.map((sample) => sample.point);
-  const indeces = utils.getNearestK(point, samplePoints, k);
-
-  const nearestSamples = indeces.map((ind) => samples[ind]);
-  const labels = nearestSamples.map((sample) => sample.label);
-
-  const counts = {};
-
-  labels.forEach((label) => {
-    if (!counts[label]) {
-      counts[label] = 1;
-    }
-    counts[label]++;
-  });
-
-  const max = Math.max(...Object.values(counts));
-
-  const label = labels.find((label) => counts[label] === max);
-
-  return { label, nearestSamples };
-};
-
-utils.calculateAccuracy = (
-  testSamples,
-  trainingSamples,
-  testingDrawings,
-  neighbors = 5
-) => {
+utils.calculateAccuracy = (testSamples, testingDrawings, classifier) => {
   let totalCount = 0;
   let correctCount = 0;
   return new Promise(function (resolve) {
@@ -207,17 +179,23 @@ utils.calculateAccuracy = (
       testSample.truth = testSample.label; //we need the truth attribute when calculating accuracy
       testSample.label = "?"; // when testing we pretend the testing samples don't have labels
 
-      const res = utils.classify(testSample.point, trainingSamples, neighbors);
+      const res = classifier.predict(testSample.point);
 
       testSample.label = res.label;
       testSample.correct = testSample.label === testSample.truth;
 
-      utils.highlightTestingSample(testingDrawings, testSample);
+      if (testingDrawings) {
+        utils.highlightTestingSample(testingDrawings, testSample);
+      }
 
       correctCount += testSample.correct ? 1 : 0;
       totalCount++;
     }
-    resolve(correctCount / totalCount);
+    resolve(
+      `ACCURACY: ${correctCount} / ${totalCount}: ${utils.formatPercent(
+        correctCount / totalCount
+      )}`
+    );
   });
 };
 
