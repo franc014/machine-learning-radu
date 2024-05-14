@@ -7,6 +7,8 @@ class Chart {
     this.axesLabels = options.axesLabels;
     this.styles = options.styles;
     this.icon = options.icon;
+    this.bg = options.bg;
+
     this.onClick = onClick;
 
     this.canvas = document.createElement("canvas");
@@ -16,6 +18,7 @@ class Chart {
     container.appendChild(this.canvas);
 
     this.ctx = this.canvas.getContext("2d");
+    this.ctx.imageSmoothingEnabled = false;
 
     this.margin = options.size * 0.11;
     this.transparency = options.transparency || 1;
@@ -201,19 +204,47 @@ class Chart {
   }
 
   #draw() {
-    const { ctx, canvas } = this;
+    const { ctx, canvas, dynamicPoint, pixelBounds, dataBounds } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.globalAlpha = this.transparency;
-    this.#drawSamples(this.samples);
-    ctx.globalAlpha = 1;
+    //before drawing the samples, plot the boundary image
+    //get top left coordinate according to the data
+    const topLeft = math.remapPoint(this.dataBounds, this.pixelBounds, [0, 1]);
 
-    if (this.hoveredSample) {
+    // Image size is the size of the canvas minus the margin on both sides
+    // and divided according to the data scale
+    const imageSize =
+      (canvas.width - 2 * this.margin) / this.dataTrans.scale ** 2;
+
+    ctx.drawImage(this.bg, ...topLeft, imageSize, imageSize);
+
+    //ctx.globalAlpha = this.transparency;
+    //this.#drawSamples(this.samples);
+    //ctx.globalAlpha = 1;
+
+    /*  if (this.hoveredSample) {
       this.#emphasizeSample(this.hoveredSample);
     }
 
     if (this.selectedSample) {
       this.#emphasizeSample(this.selectedSample, "yellow");
+    } */
+
+    if (dynamicPoint) {
+      const { point, label } = dynamicPoint;
+      const pixelLoc = math.remapPoint(dataBounds, pixelBounds, point);
+      //graphics.drawPoint(ctx, pixelLoc, "rgba(255,255,255,0.7)", 100000);
+      graphics.drawImage(ctx, this.styles[label].image, pixelLoc);
+      //graphics.drawPoint(ctx, pixelLoc, this.styles[label].color, 10);
+
+      /* for (const sample of this.nearestSamples) {
+        ctx.beginPath();
+        ctx.moveTo(...pixelLoc);
+        ctx.lineTo(...math.remapPoint(dataBounds, pixelBounds, sample.point));
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      } */
     }
 
     this.#drawAxes();
@@ -320,7 +351,7 @@ class Chart {
   }
 
   #drawSamples(samples) {
-    const { ctx, dataBounds, pixelBounds, dynamicPoint } = this;
+    const { ctx, dataBounds, pixelBounds } = this;
     for (const sample of samples) {
       const { point, label } = sample;
 
@@ -339,22 +370,6 @@ class Chart {
         default:
           graphics.drawPoint(ctx, pixelLoc, this.styles[label].color);
           break;
-      }
-    }
-    if (dynamicPoint) {
-      const { point, label } = dynamicPoint;
-      const pixelLoc = math.remapPoint(dataBounds, pixelBounds, point);
-      graphics.drawPoint(ctx, pixelLoc, "rgba(255,255,255,0.7)", 100000);
-      graphics.drawImage(ctx, this.styles[label].image, pixelLoc);
-      graphics.drawPoint(ctx, pixelLoc, this.styles[label].color, 10);
-
-      for (const sample of this.nearestSamples) {
-        ctx.beginPath();
-        ctx.moveTo(...pixelLoc);
-        ctx.lineTo(...math.remapPoint(dataBounds, pixelBounds, sample.point));
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 2;
-        ctx.stroke();
       }
     }
   }

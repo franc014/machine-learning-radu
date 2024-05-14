@@ -1,7 +1,7 @@
 const constants = {};
 
 constants.PUBLIC_DIR = "../../public";
-console.log(constants.PUBLIC_DIR);
+
 constants.DATA_DIR = "../data";
 constants.RAW_DIR = constants.DATA_DIR + "/raw";
 constants.DATASET_DIR = constants.DATA_DIR + "/dataset";
@@ -20,5 +20,8 @@ constants.TRAINING_JS = constants.JS_OBJECTS + "/training.js";
 constants.TESTING_JS = constants.JS_OBJECTS + "/testing.js";
 
 constants.MIN_MAX_JS = constants.JS_OBJECTS + "/minMax.js";
+
+constants.DECISION_BOUNDARY =
+  constants.PUBLIC_DIR + "/data/img/decision_boundary.png";
 
 export default constants;
