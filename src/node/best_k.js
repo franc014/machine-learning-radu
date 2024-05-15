@@ -7,20 +7,45 @@ import testing from "../common/js_objects/testing.js";
 import KNN from "../common/classifiers/knn.js";
 
 console.log("Checking best k...");
-const results = [];
 
 function generateArray(length) {
   return Array.from({ length }, (_, i) => [i + 1, 0]);
 }
 
-let ks = generateArray(6);
+let ks = generateArray(100);
 
-for (let i = 0; i < ks.length; i++) {
-  let knn = new KNN(training.samples, ks[i][0]);
-  ks[i][1] = await utils.calculateAccuracy(testing.samples, null, knn);
+/* async function calculateAccuracyForKs() {
+  await Promise.all(
+    ks.map(async (kItem) => {
+      let knn = new KNN(training.samples, kItem[0]);
+      kItem[1] = await utils.calculateAccuracy(testing.samples, null, knn);
+    })
+  );
 }
 
-console.log(ks);
+calculateAccuracyForKs().then(() => {
+  console.log(ks);
+}); */
+
+async function calculateAccuracyForKs(index) {
+  if (index < ks.length) {
+    // Deep copy testing.samples
+    const testingCopy = JSON.parse(JSON.stringify(testing.samples));
+
+    // Deep copy knn
+    const knn = new KNN(
+      JSON.parse(JSON.stringify(training.samples)),
+      ks[index][0]
+    );
+
+    ks[index][1] = await utils.calculateAccuracy(testingCopy, null, knn);
+    await calculateAccuracyForKs(index + 1);
+  }
+}
+
+calculateAccuracyForKs(0).then(() => {
+  console.log(ks);
+});
 
 /* 
 
