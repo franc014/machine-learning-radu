@@ -1,7 +1,7 @@
 import utils from "../../common/utils.js";
 
 class KNN {
-  constructor(samples, k) {
+  constructor(samples, k = 1) {
     this.samples = samples;
     this.k = k;
   }
@@ -26,6 +26,10 @@ class KNN {
 
     const label = labels.find((label) => counts[label] === max);
     return { label, nearestSamples };
+  }
+
+  setK(k) {
+    this.k = k;
   }
 }
 

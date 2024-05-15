@@ -191,11 +191,7 @@ utils.calculateAccuracy = (testSamples, testingDrawings, classifier) => {
       correctCount += testSample.correct ? 1 : 0;
       totalCount++;
     }
-    resolve(
-      `ACCURACY: ${correctCount} / ${totalCount}: ${utils.formatPercent(
-        correctCount / totalCount
-      )}`
-    );
+    resolve(utils.formatPercent(correctCount / totalCount));
   });
 };
 

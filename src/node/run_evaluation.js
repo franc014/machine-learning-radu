@@ -9,9 +9,11 @@ import KNN from "../common/classifiers/knn.js";
 
 console.log("Running classification...");
 
-const knn = new KNN(training.samples, 10);
+const knn = new KNN(training.samples, 3);
 
 const accuracy = await utils.calculateAccuracy(testing.samples, null, knn);
+
+console.log(`Classification accuracy: ${accuracy}`);
 
 console.log("Generating decision boundary...");
 
